@@ -1,0 +1,95 @@
+package com.mvc.dao;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.mvc.bean.User;
+import com.mvc.util.sql.UserSql;
+
+public class UserDao implements UserDaoInterface {
+    private static Map<String, User> userMap = new HashMap<String, User>();
+    static{
+        UserSql userSql = new UserSql();
+        userMap = userSql.userSqlData();
+    }
+    @Override
+    public void add(User user) {
+        // TODO Auto-generated method stub
+        if (user != null) {
+            String key = user.getAccount().getId();
+            User value = user;
+            int size = userMap.size();
+            userMap.put(key, value);
+            if (size != userMap.size()) {
+                System.out.println("添加成功");
+            } else {
+                System.out.println("添加失败");
+            }
+        }
+    }
+
+    @Override
+    public void delete(String id) {
+        // TODO Auto-generated method stub
+        int size = userMap.size();
+        if (userMap.get(id) == null) {
+            System.out.println("未找到ID为：" + id + "的用户");
+            return;
+        }
+        userMap.remove(id);
+        UserSql userSql = new UserSql();
+        userSql.delet(id);
+        if (size != userMap.size()) {
+            System.out.println("删除成功");
+        } else {
+            System.out.println("删除失败");
+        }
+    }
+
+    @Override
+    public void update(String id) {
+        User user = getUserByID("admin");
+        System.out.println(user);
+        user.setUserAge(120);
+        UserSql userSql = new UserSql();
+        userSql.update(user);
+    }
+
+    @Override
+    public User getUserByID(String id) {
+        User user = userMap.get(id);
+        if (user != null) {
+            return user;
+        }
+        System.out.println("未找到ID为：" + id + "的用户");
+        return null;
+    }
+
+    @Override
+    public Map<String, User> getAllUser() {
+        // TODO Auto-generated method stub
+        if (!userMap.isEmpty()) {
+            return userMap;
+        }
+        System.out.println("没有用户");
+        return null;
+    }
+
+    @Override
+    public void changeUserPower(User user, int power) {
+        // TODO Auto-generated method stub
+
+        userMap.remove(user.getAccount().getId());
+        user.getAccount().setPower(power);
+        if (null == userMap.put(user.getAccount().getId(), user)) {
+            System.out.println("修改成功");
+        } else {
+            System.out.println("修改失败");
+        }
+    }
+    @Override
+    public  void saveUserDate(){
+        UserSql userSql = new UserSql();
+        userSql.save(userMap);
+    }
+}
